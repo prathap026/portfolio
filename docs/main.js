@@ -91,11 +91,11 @@ class AppComponent {
     this.translateService = translateService;
     this.location = location;
     this.languageService = languageService;
-    this.title = 'andresjosehr-portfolio';
+    this.title = 'nithish-portfolio';
   }
   ngOnInit() {
     this.languageService.initLanguage();
-    this.titleService.setTitle("José Andrés | Frontend Developer");
+    this.titleService.setTitle("Nithish | Frontend Developer");
     this.metaService.addTags([{
       name: 'keywords',
       content: 'Frontend, software, developer'

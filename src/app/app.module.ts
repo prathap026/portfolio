@@ -18,6 +18,7 @@ import {
   TranslateService,
 } from '@ngx-translate/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -51,7 +52,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
     NgbModule,
   ],
-  providers: [TranslateService],
-  bootstrap: [AppComponent],
+  providers: [TranslateService, { provide: LocationStrategy, useClass: HashLocationStrategy }],
+
 })
-export class AppModule {}
+export class AppModule { }

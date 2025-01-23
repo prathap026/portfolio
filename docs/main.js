@@ -504,15 +504,10 @@ class FooterComponent {
     this.analyticsService = analyticsService;
   }
   ngOnInit() {}
-  onSendMail(event) {
-    // Prevent the default action (opening mail client) for a moment
-    event.preventDefault();
-    // Log the analytics event
-    this.analyticsService.sendAnalyticEvent("click_send_mail", "footer", "email");
-    // Open the mail client after logging
-    setTimeout(() => {
-      window.location.href = "mailto:nithish.kr.ece@gmail.com";
-    }, 100); // Slight delay to ensure analytics is sent first
+  openGmail() {
+    const recipient = 'nithish.kr.ece@gmail.com';
+    const mailtoURL = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}`;
+    window.open(mailtoURL, '_blank');
   }
   static #_ = this.ɵfac = function FooterComponent_Factory(t) {
     return new (t || FooterComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_services_analytics_analytics_service__WEBPACK_IMPORTED_MODULE_0__.AnalyticsService));
@@ -522,7 +517,7 @@ class FooterComponent {
     selectors: [["app-footer"]],
     decls: 16,
     vars: 1,
-    consts: [[1, "footer-left-bar", "d-none", "d-md-block"], ["href", "https://github.com/nithish0703", "target", "_blank", 3, "click"], [1, "fab", "fa-github"], ["href", "https://www.linkedin.com/in/nithishkumar-s-b769691a0", "target", "_blank", 3, "click"], [1, "fab", "fa-linkedin-in"], [1, "footer-right-bar", "d-none", "d-md-block"], ["href", "mailto:nithish.kr.ece@gmail.com", "target", "_blank", 3, "click"], [1, "footer-credits", "text-center"], ["href", "https://github.com/nithish0703/nithish-portfolio", "target", "_blank", "rel", "nofollow noopener noreferrer", 3, "click"]],
+    consts: [[1, "footer-left-bar", "d-none", "d-md-block"], ["href", "https://github.com/nithish0703", "target", "_blank", 3, "click"], [1, "fab", "fa-github"], ["href", "https://www.linkedin.com/in/nithishkumar-s-b769691a0", "target", "_blank", 3, "click"], [1, "fab", "fa-linkedin-in"], [1, "footer-right-bar", "d-none", "d-md-block"], ["href", "mailto:nithish.kr.ece@gmail.com", 3, "click"], [1, "footer-credits", "text-center"], ["href", "https://github.com/nithish0703/nithish-portfolio", "target", "_blank", "rel", "nofollow noopener noreferrer", 3, "click"]],
     template: function FooterComponent_Template(rf, ctx) {
       if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "footer")(1, "div")(2, "ul", 0)(3, "li")(4, "a", 1);
@@ -539,7 +534,7 @@ class FooterComponent {
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]()()();
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](9, "div", 5)(10, "a", 6);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function FooterComponent_Template_a_click_10_listener() {
-          return ctx.analyticsService.sendAnalyticEvent("click_email", "footer", "email");
+          return ctx.openGmail();
         });
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](11, "nithish.kr.ece@gmail.com ");
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]()()();

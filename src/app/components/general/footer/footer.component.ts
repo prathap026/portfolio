@@ -30,18 +30,12 @@ export class FooterComponent implements OnInit {
 
   ngOnInit(): void {
   }
+  
+  openGmail() {
 
-  onSendMail(event: Event) {
-    // Prevent the default action (opening mail client) for a moment
-    event.preventDefault();
+    const recipient = 'nithish.kr.ece@gmail.com'; 
+    const mailtoURL = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}`;
+    window.open(mailtoURL, '_blank');
 
-    // Log the analytics event
-    this.analyticsService.sendAnalyticEvent("click_send_mail", "footer", "email");
-
-    // Open the mail client after logging
-    setTimeout(() => {
-        window.location.href = "mailto:nithish.kr.ece@gmail.com";
-    }, 100); // Slight delay to ensure analytics is sent first
-}
-
+  }
 }

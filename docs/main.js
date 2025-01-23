@@ -175,7 +175,8 @@ class AppModule {
     return new (t || AppModule)();
   };
   static #_2 = this.ɵmod = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdefineNgModule"]({
-    type: AppModule
+    type: AppModule,
+    bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_1__.AppComponent]
   });
   static #_3 = this.ɵinj = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdefineInjector"]({
     providers: [_ngx_translate_core__WEBPACK_IMPORTED_MODULE_7__.TranslateService, {

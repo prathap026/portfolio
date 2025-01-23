@@ -6,15 +6,15 @@ import { AnalyticsService } from 'src/app/services/analytics/analytics.service';
   selector: 'app-footer',
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss'],
-  animations:[
+  animations: [
     trigger("animateFooter", [
       transition(":enter", [
         query("*", [
-          style({opacity: 0, transform: "translateY(100%)"}),
+          style({ opacity: 0, transform: "translateY(100%)" }),
           stagger(50, [
             animate(
               "250ms cubic-bezier(0.35, 0, 0.25, 1)",
-              style({opacity:1, transform: "none"})
+              style({ opacity: 1, transform: "none" })
             )
           ])
         ])
@@ -30,5 +30,18 @@ export class FooterComponent implements OnInit {
 
   ngOnInit(): void {
   }
+
+  onSendMail(event: Event) {
+    // Prevent the default action (opening mail client) for a moment
+    event.preventDefault();
+
+    // Log the analytics event
+    this.analyticsService.sendAnalyticEvent("click_send_mail", "footer", "email");
+
+    // Open the mail client after logging
+    setTimeout(() => {
+        window.location.href = "mailto:nithish.kr.ece@gmail.com";
+    }, 100); // Slight delay to ensure analytics is sent first
+}
 
 }

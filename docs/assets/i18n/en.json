@@ -33,28 +33,27 @@
     }
   ],
   "FeatureProjects.Title": "My Projects",
-  "FeatureProjects.Label": "Highlighted Project",
+  "FeatureProjects.Label": "",
   "FeatureProjects.Projects": [
     {
-      "Title": "Gisselle",
-      "Description": "Web application for internal company management that covers sales, collection, and tracking departments, very extensive and complex with various functions made in <span class='underline'>Angular</span> and <span class='underline'>Laravel</span>. It works with <span class='underline'>websockets</span>, <span class='underline'>schedules</span>, <span class='underline'>laravel jobs</span>, integrations with WordPress, Zadarma, LiveConnect, etc.",
+      "Title": "UP EXCISE",
+      "Description": "Working on a web application to efficiently suggest and manage the <span class='underline'>UPEX </span> (Integrated Excise Supply Chain Management System - IESCMS for UP) with supply chain management (SCM), which oversees the flow of supplies through all stages of the production cycle.",
       "imgs": [
-        "assets/images/gisselle/Captura de pantalla 2024-05-19 1009582.png",
-        "assets/images/gisselle/Captura de pantalla 2024-05-19 115514.png",
-        "assets/images/gisselle/Captura de pantalla 2024-05-19 115702.png",
-        "assets/images/gisselle/Captura de pantalla 2024-05-19 115829.png",
-        "assets/images/gisselle/Captura de pantalla 2024-05-19 1009582.png"
+        "assets/images/login.png",
+        "assets/images/indentrequest.png",
+        "assets/images/advancesearch.png",
+        "assets/images/payment.png"
       ],
       "Technologies": [
-        "Laravel",
-        "Angular",
-        "SASS",
+        "Angular 8",
+        "TypeScript 3.4",
         "Angular Material",
+        "Bootstrap",
         "RxJS"
       ]
     },
     {
-      "Title": "Emelteciot",
+      "Title": "POS",
       "Description": "Monitoring application for data query, made with <span class='underline'>Angular</span> and <span class='underline'>Laravel</span>. The <span class='underline'>chart.js</span> library is applied.",
       "imgs": [
         "assets/images/proyex2/Captura de pantalla 2024-07-28 102852.png",

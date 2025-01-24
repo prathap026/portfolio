@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, HostListener, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
-import {trigger, style, query, transition, stagger, animate } from '@angular/animations'
+import { trigger, style, query, transition, stagger, animate } from '@angular/animations'
 import { AnalyticsService } from 'src/app/services/analytics/analytics.service';
 import { TranslateService } from '@ngx-translate/core';
 import { UntypedFormControl } from '@angular/forms';
@@ -12,15 +12,15 @@ import { ThisReceiver } from '@angular/compiler';
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
-  animations:[
-    trigger("animateMenu",[
-      transition(":enter",[
+  animations: [
+    trigger("animateMenu", [
+      transition(":enter", [
         query("*", [
-          style({opacity: 0, transform: "translateY(-50%)"}),
-          stagger(50,[
+          style({ opacity: 0, transform: "translateY(-50%)" }),
+          stagger(50, [
             animate(
               "250ms cubic-bezier(0.35, 0, 0.25, 1)",
-              style({opacity: 1, transform: "none"}))
+              style({ opacity: 1, transform: "none" }))
           ])
         ])
       ])
@@ -34,7 +34,7 @@ export class HeaderComponent implements OnInit {
 
   responsiveMenuVisible: Boolean = false;
   pageYPosition: number;
-  languageFormControl: UntypedFormControl= new UntypedFormControl();
+  languageFormControl: UntypedFormControl = new UntypedFormControl();
   cvName: string = "";
 
   constructor(
@@ -52,32 +52,30 @@ export class HeaderComponent implements OnInit {
   }
 
   scroll(el) {
-    if(document.getElementById(el)) {
-      document.getElementById(el).scrollIntoView({behavior: 'smooth'});
-    } else{
-      this.router.navigate(['/home']).then(()=> document.getElementById(el).scrollIntoView({behavior: 'smooth'}) );
+    if (document.getElementById(el)) {
+      document.getElementById(el).scrollIntoView({ behavior: 'smooth' });
+    } else {
+      this.router.navigate(['/home']).then(() => document.getElementById(el).scrollIntoView({ behavior: 'smooth' }));
     }
-    this.responsiveMenuVisible=false;
+    this.responsiveMenuVisible = false;
   }
 
-  downloadCV(){
+  downloadCV() {
     this.languageService.translateService.get("Header.cvName").subscribe(val => {
-      this.cvName = val
-      console.log(val)
-      let url = window.location.href;
-
-      // Open a new window with the CV
-      window.open(url + "/../assets/cv/" + this.cvName, "_blank");
-    })
+      this.cvName = val;
+      const baseUrl = window.location.origin;
+      const cvUrl = `${baseUrl}/assets/cv/${this.cvName}`;
+      window.open(cvUrl, "_blank");
+    });
 
   }
 
   @HostListener('window:scroll', ['getScrollPosition($event)'])
-    getScrollPosition(event) {
-        this.pageYPosition=window.pageYOffset
-    }
+  getScrollPosition(event) {
+    this.pageYPosition = window.pageYOffset
+  }
 
-    changeLanguage(language: string) {
-      this.languageFormControl.setValue(language);
-    }
+  changeLanguage(language: string) {
+    this.languageFormControl.setValue(language);
+  }
 }

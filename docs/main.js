@@ -1,5 +1,5 @@
 "use strict";
-(self["webpackChunkandresjosehr_portfolio"] = self["webpackChunkandresjosehr_portfolio"] || []).push([["main"],{
+(self["webpackChunksivaraj_portfolio"] = self["webpackChunksivaraj_portfolio"] || []).push([["main"],{
 
 /***/ 4114:
 /*!***************************************!*\
@@ -704,10 +704,9 @@ class HeaderComponent {
   downloadCV() {
     this.languageService.translateService.get("Header.cvName").subscribe(val => {
       this.cvName = val;
-      console.log(val);
-      let url = window.location.href;
-      // Open a new window with the CV
-      window.open(url + "/../assets/cv/" + this.cvName, "_blank");
+      const baseUrl = window.location.origin;
+      const cvUrl = `${baseUrl}/assets/cv/${this.cvName}`;
+      window.open(cvUrl, "_blank");
     });
   }
   getScrollPosition(event) {

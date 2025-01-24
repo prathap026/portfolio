@@ -182,7 +182,7 @@
     float: left;
   }
   .sender-msg {
-    background: #2798fc;
+    background: #000000;
     float: right;
   }
   @keyframes rotate {

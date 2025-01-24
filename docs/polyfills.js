@@ -1,7 +1,7 @@
 "use strict";
 (self["webpackChunksivaraj_portfolio"] = self["webpackChunksivaraj_portfolio"] || []).push([["polyfills"],{
 
-/***/ 4050:
+/***/ 24050:
 /*!**************************!*\
   !*** ./src/polyfills.ts ***!
   \**************************/
@@ -9,7 +9,7 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_localize_init__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/localize/init */ 1643);
-/* harmony import */ var zone_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! zone.js */ 4124);
+/* harmony import */ var zone_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! zone.js */ 74124);
 /* harmony import */ var zone_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(zone_js__WEBPACK_IMPORTED_MODULE_1__);
 /***************************************************************************************************
  * Load `$localize` onto the global scope - used if i18n tags appear in Angular templates.
@@ -74,7 +74,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ 4124:
+/***/ 74124:
 /*!***********************************************!*\
   !*** ./node_modules/zone.js/fesm2015/zone.js ***!
   \***********************************************/
@@ -105,7 +105,9 @@ function initZone() {
   mark('Zone');
   class ZoneImpl {
     // tslint:disable-next-line:require-internal-with-underscore
-    static #_ = this.__symbol__ = __symbol__;
+    static {
+      this.__symbol__ = __symbol__;
+    }
     static assertZonePatched() {
       if (global['Promise'] !== patches['ZoneAwarePromise']) {
         throw new Error('Zone.js has detected that ZoneAwarePromise `(window|global).Promise` ' + 'has been overwritten.\n' + 'Most likely cause is that a Promise polyfill has been loaded ' + 'after Zone.js (Polyfilling Promise api is not necessary when zone.js is loaded. ' + 'If you must load one, do so before loading zone.js.)');
@@ -213,27 +215,34 @@ function initZone() {
       if (task.zone != this) {
         throw new Error('A task can only be run in the zone of creation! (Creation: ' + (task.zone || NO_ZONE).name + '; Execution: ' + this.name + ')');
       }
+      const zoneTask = task;
       // https://github.com/angular/zone.js/issues/778, sometimes eventTask
       // will run in notScheduled(canceled) state, we should not try to
       // run such kind of task but just return
-      if (task.state === notScheduled && (task.type === eventTask || task.type === macroTask)) {
+      const {
+        type,
+        data: {
+          isPeriodic = false,
+          isRefreshable = false
+        } = {}
+      } = task;
+      if (task.state === notScheduled && (type === eventTask || type === macroTask)) {
         return;
       }
       const reEntryGuard = task.state != running;
-      reEntryGuard && task._transitionTo(running, scheduled);
-      task.runCount++;
+      reEntryGuard && zoneTask._transitionTo(running, scheduled);
       const previousTask = _currentTask;
-      _currentTask = task;
+      _currentTask = zoneTask;
       _currentZoneFrame = {
         parent: _currentZoneFrame,
         zone: this
       };
       try {
-        if (task.type == macroTask && task.data && !task.data.isPeriodic) {
+        if (type == macroTask && task.data && !isPeriodic && !isRefreshable) {
           task.cancelFn = undefined;
         }
         try {
-          return this._zoneDelegate.invokeTask(this, task, applyThis, applyArgs);
+          return this._zoneDelegate.invokeTask(this, zoneTask, applyThis, applyArgs);
         } catch (error) {
           if (this._zoneDelegate.handleError(this, error)) {
             throw error;
@@ -242,13 +251,17 @@ function initZone() {
       } finally {
         // if the task's state is notScheduled or unknown, then it has already been cancelled
         // we should not reset the state to scheduled
-        if (task.state !== notScheduled && task.state !== unknown) {
-          if (task.type == eventTask || task.data && task.data.isPeriodic) {
-            reEntryGuard && task._transitionTo(scheduled, running);
+        const state = task.state;
+        if (state !== notScheduled && state !== unknown) {
+          if (type == eventTask || isPeriodic || isRefreshable && state === scheduling) {
+            reEntryGuard && zoneTask._transitionTo(scheduled, running, scheduling);
           } else {
-            task.runCount = 0;
-            this._updateTaskCount(task, -1);
-            reEntryGuard && task._transitionTo(notScheduled, running, notScheduled);
+            const zoneDelegates = zoneTask._zoneDelegates;
+            this._updateTaskCount(zoneTask, -1);
+            reEntryGuard && zoneTask._transitionTo(notScheduled, running, notScheduled);
+            if (isRefreshable) {
+              zoneTask._zoneDelegates = zoneDelegates;
+            }
           }
         }
         _currentZoneFrame = _currentZoneFrame.parent;
@@ -315,7 +328,7 @@ function initZone() {
       }
       this._updateTaskCount(task, -1);
       task._transitionTo(notScheduled, canceling);
-      task.runCount = 0;
+      task.runCount = -1;
       return task;
     }
     _updateTaskCount(task, count) {
@@ -775,6 +788,7 @@ const isBrowser = !isNode && !isWebWorker && !!(isWindowExists && internalWindow
 // this code.
 const isMix = typeof _global.process !== 'undefined' && _global.process.toString() === '[object process]' && !isWebWorker && !!(isWindowExists && internalWindow['HTMLElement']);
 const zoneSymbolEventNames$1 = {};
+const enableBeforeunloadSymbol = zoneSymbol('enable_beforeunload');
 const wrapFn = function (event) {
   // https://github.com/angular/zone.js/issues/911, in IE, sometimes
   // event will be undefined, so we need to use window.event
@@ -800,7 +814,24 @@ const wrapFn = function (event) {
     }
   } else {
     result = listener && listener.apply(this, arguments);
-    if (result != undefined && !result) {
+    if (
+    // https://github.com/angular/angular/issues/47579
+    // https://www.w3.org/TR/2011/WD-html5-20110525/history.html#beforeunloadevent
+    // This is the only specific case we should check for. The spec defines that the
+    // `returnValue` attribute represents the message to show the user. When the event
+    // is created, this attribute must be set to the empty string.
+    event.type === 'beforeunload' &&
+    // To prevent any breaking changes resulting from this change, given that
+    // it was already causing a significant number of failures in G3, we have hidden
+    // that behavior behind a global configuration flag. Consumers can enable this
+    // flag explicitly if they want the `beforeunload` event to be handled as defined
+    // in the specification.
+    _global[enableBeforeunloadSymbol] &&
+    // The IDL event definition is `attribute DOMString returnValue`, so we check whether
+    // `typeof result` is a string.
+    typeof result === 'string') {
+      event.returnValue = result;
+    } else if (result != undefined && !result) {
       event.preventDefault();
     }
   }
@@ -1058,11 +1089,21 @@ function isIEOrEdge() {
   } catch (error) {}
   return ieOrEdge;
 }
+function isFunction(value) {
+  return typeof value === 'function';
+}
+function isNumber(value) {
+  return typeof value === 'number';
+}
 
 /**
  * @fileoverview
  * @suppress {missingRequire}
  */
+// Note that passive event listeners are now supported by most modern browsers,
+// including Chrome, Firefox, Safari, and Edge. There's a pending change that
+// would remove support for legacy browsers by zone.js. Removing `passiveSupported`
+// from the codebase will reduce the final code size for existing apps that still use zone.js.
 let passiveSupported = false;
 if (typeof window !== 'undefined') {
   try {
@@ -1223,8 +1264,14 @@ function patchEventTarget(_global, api, apis, patchOptions) {
       return false;
     }
     const eventNameToString = patchOptions && patchOptions.eventNameToString;
-    // a shared global taskData to pass data for scheduleEventTask
-    // so we do not need to create a new object just for pass some data
+    // We use a shared global `taskData` to pass data for `scheduleEventTask`,
+    // eliminating the need to create a new object solely for passing data.
+    // WARNING: This object has a static lifetime, meaning it is not created
+    // each time `addEventListener` is called. It is instantiated only once
+    // and captured by reference inside the `addEventListener` and
+    // `removeEventListener` functions. Do not add any new properties to this
+    // object, as doing so would necessitate maintaining the information
+    // between `addEventListener` calls.
     const taskData = {};
     const nativeAddEventListener = proto[zoneSymbolAddEventListener] = proto[ADD_EVENT_LISTENER];
     const nativeRemoveEventListener = proto[zoneSymbol(REMOVE_EVENT_LISTENER)] = proto[REMOVE_EVENT_LISTENER];
@@ -1275,6 +1322,12 @@ function patchEventTarget(_global, api, apis, patchOptions) {
       }
       return nativeAddEventListener.call(taskData.target, taskData.eventName, taskData.capture ? globalZoneAwareCaptureCallback : globalZoneAwareCallback, taskData.options);
     };
+    /**
+     * In the context of events and listeners, this function will be
+     * called at the end by `cancelTask`, which, in turn, calls `task.cancelFn`.
+     * Cancelling a task is primarily used to remove event listeners from
+     * the task target.
+     */
     const customCancelGlobal = function (task) {
       // if task is not marked as isRemoved, this call is directly
       // from Zone.prototype.cancelTask, we should remove the task
@@ -1293,6 +1346,10 @@ function patchEventTarget(_global, api, apis, patchOptions) {
               existingTasks.splice(i, 1);
               // set isRemoved to data for faster invokeTask check
               task.isRemoved = true;
+              if (task.removeAbortListener) {
+                task.removeAbortListener();
+                task.removeAbortListener = null;
+              }
               if (existingTasks.length === 0) {
                 // all tasks for the eventName + capture have gone,
                 // remove globalZoneAwareCallback and remove the task cache from target
@@ -1330,6 +1387,30 @@ function patchEventTarget(_global, api, apis, patchOptions) {
     const compare = patchOptions && patchOptions.diff ? patchOptions.diff : compareTaskCallbackVsDelegate;
     const unpatchedEvents = Zone[zoneSymbol('UNPATCHED_EVENTS')];
     const passiveEvents = _global[zoneSymbol('PASSIVE_EVENTS')];
+    function copyEventListenerOptions(options) {
+      if (typeof options === 'object' && options !== null) {
+        // We need to destructure the target `options` object since it may
+        // be frozen or sealed (possibly provided implicitly by a third-party
+        // library), or its properties may be readonly.
+        const newOptions = {
+          ...options
+        };
+        // The `signal` option was recently introduced, which caused regressions in
+        // third-party scenarios where `AbortController` was directly provided to
+        // `addEventListener` as options. For instance, in cases like
+        // `document.addEventListener('keydown', callback, abortControllerInstance)`,
+        // which is valid because `AbortController` includes a `signal` getter, spreading
+        // `{...options}` wouldn't copy the `signal`. Additionally, using `Object.create`
+        // isn't feasible since `AbortController` is a built-in object type, and attempting
+        // to create a new object directly with it as the prototype might result in
+        // unexpected behavior.
+        if (options.signal) {
+          newOptions.signal = options.signal;
+        }
+        return newOptions;
+      }
+      return options;
+    }
     const makeAddListener = function (nativeListener, addSource, customScheduleFn, customCancelFn, returnTarget = false, prepend = false) {
       return function () {
         const target = this || _global;
@@ -1359,7 +1440,7 @@ function patchEventTarget(_global, api, apis, patchOptions) {
           return;
         }
         const passive = passiveSupported && !!passiveEvents && passiveEvents.indexOf(eventName) !== -1;
-        const options = buildEventListenerOptions(arguments[2], passive);
+        const options = copyEventListenerOptions(buildEventListenerOptions(arguments[2], passive));
         const signal = options?.signal;
         if (signal?.aborted) {
           // the signal is an aborted one, just return without attaching the event listener.
@@ -1411,13 +1492,16 @@ function patchEventTarget(_global, api, apis, patchOptions) {
         if (!source) {
           source = constructorName + addSource + (eventNameToString ? eventNameToString(eventName) : eventName);
         }
-        // do not create a new object as task.data to pass those things
-        // just use the global shared one
+        // In the code below, `options` should no longer be reassigned; instead, it
+        // should only be mutated. This is because we pass that object to the native
+        // `addEventListener`.
+        // It's generally recommended to use the same object reference for options.
+        // This ensures consistency and avoids potential issues.
         taskData.options = options;
         if (once) {
-          // if addEventListener with once options, we don't pass it to
-          // native addEventListener, instead we keep the once setting
-          // and handle ourselves.
+          // When using `addEventListener` with the `once` option, we don't pass
+          // the `once` option directly to the native `addEventListener` method.
+          // Instead, we keep the `once` setting and handle it ourselves.
           taskData.options.once = false;
         }
         taskData.target = target;
@@ -1430,11 +1514,15 @@ function patchEventTarget(_global, api, apis, patchOptions) {
           data.taskData = taskData;
         }
         if (signal) {
-          // if addEventListener with signal options, we don't pass it to
-          // native addEventListener, instead we keep the signal setting
-          // and handle ourselves.
+          // When using `addEventListener` with the `signal` option, we don't pass
+          // the `signal` option directly to the native `addEventListener` method.
+          // Instead, we keep the `signal` setting and handle it ourselves.
           taskData.options.signal = undefined;
         }
+        // The `scheduleEventTask` function will ultimately call `customScheduleGlobal`,
+        // which in turn calls the native `addEventListener`. This is why `taskData.options`
+        // is updated before scheduling the task, as `customScheduleGlobal` uses
+        // `taskData.options` to pass it to the native `addEventListener`.
         const task = zone.scheduleEventTask(source, delegate, data, customScheduleFn, customCancelFn);
         if (signal) {
           // after task is scheduled, we need to store the signal back to task.options
@@ -1450,9 +1538,7 @@ function patchEventTarget(_global, api, apis, patchOptions) {
           // as it creates a closure that captures `task`. This closure retains a reference to the
           // `task` object even after it goes out of scope, preventing `task` from being garbage
           // collected.
-          if (data) {
-            data.removeAbortListener = () => signal.removeEventListener('abort', onAbort);
-          }
+          task.removeAbortListener = () => signal.removeEventListener('abort', onAbort);
         }
         // should clear taskData.target to avoid memory leak
         // issue, https://github.com/angular/angular/issues/20442
@@ -1464,7 +1550,7 @@ function patchEventTarget(_global, api, apis, patchOptions) {
         // have to save those information to task in case
         // application may call task.zone.cancelTask() directly
         if (once) {
-          options.once = true;
+          taskData.options.once = true;
         }
         if (!(!passiveSupported && typeof task.options === 'boolean')) {
           // if not support passive, and we pass an option object
@@ -1513,6 +1599,10 @@ function patchEventTarget(_global, api, apis, patchOptions) {
         symbolEventName = symbolEventNames[capture ? TRUE_STR : FALSE_STR];
       }
       const existingTasks = symbolEventName && target[symbolEventName];
+      // `existingTasks` may not exist if the `addEventListener` was called before
+      // it was patched by zone.js. Please refer to the attached issue for
+      // clarification, particularly after the `if` condition, before calling
+      // the native `removeEventListener`.
       if (existingTasks) {
         for (let i = 0; i < existingTasks.length; i++) {
           const existingTask = existingTasks[i];
@@ -1535,13 +1625,11 @@ function patchEventTarget(_global, api, apis, patchOptions) {
                 target[onPropertySymbol] = null;
               }
             }
-            // Note that `removeAllListeners` would ultimately call `removeEventListener`,
-            // so we're safe to remove the abort listener only once here.
-            const taskData = existingTask.data;
-            if (taskData?.removeAbortListener) {
-              taskData.removeAbortListener();
-              taskData.removeAbortListener = null;
-            }
+            // In all other conditions, when `addEventListener` is called after being
+            // patched by zone.js, we would always find an event task on the `EventTarget`.
+            // This will trigger `cancelFn` on the `existingTask`, leading to `customCancelGlobal`,
+            // which ultimately removes an event listener and cleans up the abort listener
+            // (if an `AbortSignal` was provided when scheduling a task).
             existingTask.zone.cancelTask(existingTask);
             if (returnTarget) {
               return target;
@@ -1550,10 +1638,12 @@ function patchEventTarget(_global, api, apis, patchOptions) {
           }
         }
       }
-      // issue 930, didn't find the event name or callback
-      // from zone kept existingTasks, the callback maybe
-      // added outside of zone, we need to call native removeEventListener
-      // to try to remove it.
+      // https://github.com/angular/zone.js/issues/930
+      // We may encounter a situation where the `addEventListener` was
+      // called on the event target before zone.js is loaded, resulting
+      // in no task being stored on the event target due to its invocation
+      // of the native implementation. In this scenario, we simply need to
+      // invoke the native `removeEventListener`.
       return nativeRemoveEventListener.apply(this, arguments);
     };
     proto[LISTENERS_EVENT_LISTENER] = function () {
@@ -1710,15 +1800,30 @@ function patchTimer(window, setName, cancelName, nameSuffix) {
     data.args[0] = function () {
       return task.invoke.apply(this, arguments);
     };
-    data.handleId = setNative.apply(window, data.args);
+    const handleOrId = setNative.apply(window, data.args);
+    // Whlist on Node.js when get can the ID by using `[Symbol.toPrimitive]()` we do
+    // to this so that we do not cause potentally leaks when using `setTimeout`
+    // since this can be periodic when using `.refresh`.
+    if (isNumber(handleOrId)) {
+      data.handleId = handleOrId;
+    } else {
+      data.handle = handleOrId;
+      // On Node.js a timeout and interval can be restarted over and over again by using the `.refresh` method.
+      data.isRefreshable = isFunction(handleOrId.refresh);
+    }
     return task;
   }
   function clearTask(task) {
-    return clearNative.call(window, task.data.handleId);
+    const {
+      handle,
+      handleId
+    } = task.data;
+    return clearNative.call(window, handle ?? handleId);
   }
   setNative = patchMethod(window, setName, delegate => function (self, args) {
-    if (typeof args[0] === 'function') {
+    if (isFunction(args[0])) {
       const options = {
+        isRefreshable: false,
         isPeriodic: nameSuffix === 'Interval',
         delay: nameSuffix === 'Timeout' || nameSuffix === 'Interval' ? args[1] || 0 : undefined,
         args: args
@@ -1735,15 +1840,21 @@ function patchTimer(window, setName, cancelName, nameSuffix) {
           // Cleanup tasksByHandleId should be handled before scheduleTask
           // Since some zoneSpec may intercept and doesn't trigger
           // scheduleFn(scheduleTask) provided here.
-          if (!options.isPeriodic) {
-            if (typeof options.handleId === 'number') {
+          const {
+            handle,
+            handleId,
+            isPeriodic,
+            isRefreshable
+          } = options;
+          if (!isPeriodic && !isRefreshable) {
+            if (handleId) {
               // in non-nodejs env, we remove timerId
               // from local cache
-              delete tasksByHandleId[options.handleId];
-            } else if (options.handleId) {
+              delete tasksByHandleId[handleId];
+            } else if (handle) {
               // Node returns complex objects as handleIds
               // we remove task reference from timer object
-              options.handleId[taskSymbol] = null;
+              handle[taskSymbol] = null;
             }
           }
         }
@@ -1753,26 +1864,38 @@ function patchTimer(window, setName, cancelName, nameSuffix) {
         return task;
       }
       // Node.js must additionally support the ref and unref functions.
-      const handle = task.data.handleId;
-      if (typeof handle === 'number') {
+      const {
+        handleId,
+        handle,
+        isRefreshable,
+        isPeriodic
+      } = task.data;
+      if (handleId) {
         // for non nodejs env, we save handleId: task
         // mapping in local cache for clearTimeout
-        tasksByHandleId[handle] = task;
+        tasksByHandleId[handleId] = task;
       } else if (handle) {
         // for nodejs env, we save task
         // reference in timerId Object for clearTimeout
         handle[taskSymbol] = task;
+        if (isRefreshable && !isPeriodic) {
+          const originalRefresh = handle.refresh;
+          handle.refresh = function () {
+            const {
+              zone,
+              state
+            } = task;
+            if (state === 'notScheduled') {
+              task._state = 'scheduled';
+              zone._updateTaskCount(task, 1);
+            } else if (state === 'running') {
+              task._state = 'scheduling';
+            }
+            return originalRefresh.call(this);
+          };
+        }
       }
-      // check whether handle is null, because some polyfill or browser
-      // may return undefined from setTimeout/setInterval/setImmediate/requestAnimationFrame
-      if (handle && handle.ref && handle.unref && typeof handle.ref === 'function' && typeof handle.unref === 'function') {
-        task.ref = handle.ref.bind(handle);
-        task.unref = handle.unref.bind(handle);
-      }
-      if (typeof handle === 'number' || handle) {
-        return handle;
-      }
-      return task;
+      return handle ?? handleId ?? task;
     } else {
       // cause an error by calling it directly.
       return delegate.apply(window, args);
@@ -1781,24 +1904,21 @@ function patchTimer(window, setName, cancelName, nameSuffix) {
   clearNative = patchMethod(window, cancelName, delegate => function (self, args) {
     const id = args[0];
     let task;
-    if (typeof id === 'number') {
+    if (isNumber(id)) {
       // non nodejs env.
       task = tasksByHandleId[id];
+      delete tasksByHandleId[id];
     } else {
-      // nodejs env.
-      task = id && id[taskSymbol];
-      // other environments.
-      if (!task) {
+      // nodejs env ?? other environments.
+      task = id?.[taskSymbol];
+      if (task) {
+        id[taskSymbol] = null;
+      } else {
         task = id;
       }
     }
-    if (task && typeof task.type === 'string') {
-      if (task.state !== 'notScheduled' && (task.cancelFn && task.data.isPeriodic || task.runCount === 0)) {
-        if (typeof id === 'number') {
-          delete tasksByHandleId[id];
-        } else if (id) {
-          id[taskSymbol] = null;
-        }
+    if (task?.type) {
+      if (task.cancelFn) {
         // Do not cancel already canceled functions
         task.zone.cancelTask(task);
       }
@@ -2813,9 +2933,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   $localize: () => (/* reexport safe */ _angular_localize__WEBPACK_IMPORTED_MODULE_0__["ɵ$localize"])
 /* harmony export */ });
-/* harmony import */ var _angular_localize__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/localize */ 5116);
+/* harmony import */ var _angular_localize__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/localize */ 95116);
 /**
- * @license Angular v17.3.9
+ * @license Angular v17.3.12
  * (c) 2010-2024 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -2828,7 +2948,7 @@ globalThis.$localize = _angular_localize__WEBPACK_IMPORTED_MODULE_0__["ɵ$locali
 
 /***/ }),
 
-/***/ 5116:
+/***/ 95116:
 /*!**************************************************************!*\
   !*** ./node_modules/@angular/localize/fesm2022/localize.mjs ***!
   \**************************************************************/
@@ -2852,7 +2972,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "ɵtranslate": () => (/* binding */ translate$1)
 /* harmony export */ });
 /**
- * @license Angular v17.3.9
+ * @license Angular v17.3.12
  * (c) 2010-2024 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -3743,7 +3863,7 @@ function stripBlock(messagePart, rawMessagePart) {
 },
 /******/ __webpack_require__ => { // webpackRuntimeModules
 /******/ var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
-/******/ var __webpack_exports__ = (__webpack_exec__(4050));
+/******/ var __webpack_exports__ = (__webpack_exec__(24050));
 /******/ }
 ]);
 //# sourceMappingURL=polyfills.js.map

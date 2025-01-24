@@ -1,7 +1,8 @@
 <nav [@animateMenu] class="navbar main-navbar on-top" [class.nav-shadow]='this.pageYPosition>0'>
     <div class="container">
         <a class="navbar-brand text-light" [routerLink]="'inicio'">
-            <img src='assets\images\Nk3_label_outlined.png' width='80' />
+            <!-- <img src='assets\images\Nk3_label_outlined.png' width='80' /> -->
+             <h1>SR</h1>
         </a>
         <ul ngbNav #nav="ngbNav" class="menu-ul">
             <li ngbNavItem (click)='analyticsService.sendAnalyticEvent("click_about", "menu", "click")'>
@@ -24,6 +25,10 @@
                 <a (click)="downloadCV()" class="main-btn cv-btn" ngbNavLink>
                   {{"Header.cvBtn" | translate}}
                 </a>
+            </li>
+            <li ngbNavItem (click)='analyticsService.sendAnalyticEvent("click_jobs", "menu", "click")'>
+                <a ngbNavLink><span class='nav-number'></span> <span class="underline nav-text"> {{"Header.Item5" | translate}}</span></a>
+                <ng-template ngbNavContent>Second content</ng-template>
             </li>
             <!-- <li>
                 <div ngbDropdown class="d-inline-block">

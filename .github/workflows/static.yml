@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload Angular build output directory
-          path: 'dist/nithish-portfolio'
+          path: 'dist/sivaraaj-portfolio'
 
       - name: Deploy to GitHub Pages
         id: deployment

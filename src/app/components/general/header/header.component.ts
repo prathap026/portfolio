@@ -64,7 +64,6 @@ export class HeaderComponent implements OnInit {
     this.languageService.translateService.get("Header.cvName").subscribe(val => {
       this.cvName = val
       console.log(val)
-      // app url
       let url = window.location.href;
 
       // Open a new window with the CV

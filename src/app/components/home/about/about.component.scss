@@ -8,12 +8,12 @@
     }
 
     .about-img-container{
-        width: 324px;
+        width: 350px;
         margin: auto;
 
         &:after{
             content: '';
-            border: 2px solid $Green;
+            // border: 2px solid $Green;
             z-index: 0;
             display: block;
             position: relative;

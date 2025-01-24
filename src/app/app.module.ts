@@ -8,7 +8,7 @@ import { GeneralModule } from './components/general/general.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 // import { AnimateOnScrollModule } from 'ng2-animate-on-scroll';
 import { ServiceWorkerModule } from '@angular/service-worker';
-import { environment } from '../environments/environment';
+// import { environment } from '../environments/environment';
 import { NgxGoogleAnalyticsModule } from 'ngx-google-analytics';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -18,6 +18,7 @@ import {
   TranslateService,
 } from '@ngx-translate/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -38,9 +39,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: environment.production,
-    }),
+    // ServiceWorkerModule.register('ngsw-worker.js', {
+    //   enabled: environment.production,
+    // }),
     // NgxGoogleAnalyticsModule.forRoot(environment.trackAnalyticID),
     TranslateModule.forRoot({
       loader: {
@@ -52,6 +53,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     NgbModule,
   ],
   providers: [TranslateService],
+  // { provide: LocationStrategy, useClass: HashLocationStrategy }
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

@@ -855,10 +855,20 @@ class HeaderComponent {
     this.responsiveMenuVisible = false;
   }
   downloadCV() {
-    const link = document.createElement('a');
-    link.href = 'assets/SIVA.pdf';
-    link.download = 'SIVARAAJ_CV.pdf';
-    link.click();
+    this.languageService.translateService.get("Header.cvName").subscribe(val => {
+      this.cvName = val;
+      const cvUrl = `assets/cv/${this.cvName}`; // Relative path without baseUrl
+      // Dynamically create an anchor element
+      const anchor = this.renderer.createElement('a');
+      this.renderer.setAttribute(anchor, 'href', cvUrl);
+      this.renderer.setAttribute(anchor, 'download', this.cvName);
+      // Append the anchor to the document body
+      this.renderer.appendChild(this.document.body, anchor);
+      // Trigger a click event to download the file
+      anchor.click();
+      // Remove the anchor after download to clean up
+      this.renderer.removeChild(this.document.body, anchor);
+    });
   }
   getScrollPosition(event) {
     this.pageYPosition = window.pageYOffset;

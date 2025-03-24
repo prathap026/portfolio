@@ -560,7 +560,7 @@ class FooterComponent {
             return ctx.analyticsService.sendAnalyticEvent("click_github", "footer", "click");
           });
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](14, "div");
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](15, "Designed & Built(Angular) by sivaraaj");
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](15, "Designed & Built(Angular) by Prathap S");
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]()()()();
         }
         if (rf & 2) {

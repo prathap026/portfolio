@@ -20,7 +20,6 @@ import {
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ChatbotComponent } from './chatbot/chatbot.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -29,7 +28,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 @NgModule({
   declarations: [
     AppComponent,
-    ChatbotComponent
+
     /* ArchiveComponent */
   ],
   imports: [
@@ -59,4 +58,4 @@ export function HttpLoaderFactory(http: HttpClient) {
   // { provide: LocationStrategy, useClass: HashLocationStrategy }
   bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

@@ -653,7 +653,7 @@ class FooterComponent {
       selectors: [["app-footer"]],
       decls: 16,
       vars: 1,
-      consts: [[1, "footer-left-bar", "d-none", "d-md-block"], ["href", "https://github.com/sivaraajc", "target", "_blank", 3, "click"], [1, "fab", "fa-github"], ["href", "https://www.linkedin.com/in/sivaraaj-c", "target", "_blank", 3, "click"], [1, "fab", "fa-linkedin-in"], [1, "footer-right-bar", "d-none", "d-md-block"], ["href", "mailto:sivaraaj6997@gmail.com"], [1, "footer-credits", "text-center"], ["href", "https://github.com/sivaraajc", "target", "_blank", "rel", "nofollow noopener noreferrer", 3, "click"]],
+      consts: [[1, "footer-left-bar", "d-none", "d-md-block"], ["href", "https://github.com/prathap026", "target", "_blank", 3, "click"], [1, "fab", "fa-github"], ["href", "https://www.linkedin.com/in/prathap-shanmugam-362b69235", "target", "_blank", 3, "click"], [1, "fab", "fa-linkedin-in"], [1, "footer-right-bar", "d-none", "d-md-block"], ["href", "mailto:prathap026prathap@gmail.com"], [1, "footer-credits", "text-center"], ["href", "https://github.com/prathap026", "target", "_blank", "rel", "nofollow noopener noreferrer", 3, "click"]],
       template: function FooterComponent_Template(rf, ctx) {
         if (rf & 1) {
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "footer")(1, "div")(2, "ul", 0)(3, "li")(4, "a", 1);
@@ -669,7 +669,7 @@ class FooterComponent {
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](8, "i", 4);
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]()()();
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](9, "div", 5)(10, "a", 6);
-          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](11, "sivaraaj6997@gmail.com ");
+          _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](11, "prathap026prathap@gmail.com ");
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]()()();
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](12, "div", 7)(13, "a", 8);
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function FooterComponent_Template_a_click_13_listener() {
@@ -1274,7 +1274,7 @@ class BannerComponent {
       selectors: [["app-banner"]],
       decls: 20,
       vars: 10,
-      consts: [[1, "section", "banner"], [1, "container"], [1, "section-box-banner"], [1, "content"], [1, "banner-title"], [1, "banner-description"], [1, "mt-4", 3, "innerHTML"], [1, "div-btn-banner"], ["href", "mailto:sivaraaj6997@gmail.com", "target", "_black", 1, "main-btn", 3, "click"]],
+      consts: [[1, "section", "banner"], [1, "container"], [1, "section-box-banner"], [1, "content"], [1, "banner-title"], [1, "banner-description"], [1, "mt-4", 3, "innerHTML"], [1, "div-btn-banner"], ["href", "mailto:prathap026prathap@gmail.com", "target", "_black", 1, "main-btn", 3, "click"]],
       template: function BannerComponent_Template(rf, ctx) {
         if (rf & 1) {
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "section", 0)(1, "div", 1)(2, "div", 2)(3, "div", 3)(4, "div")(5, "h1");
@@ -1360,7 +1360,7 @@ class ContactComponent {
       selectors: [["app-contact"]],
       decls: 18,
       vars: 12,
-      consts: [["id", "contact", 1, "section"], [1, "container", "contact"], [1, "section-box"], ["data-aos", "fade-up", "data-aos-duration", "1000", 1, "mb-4"], [1, "contact-pre-title", "big-subtitle"], [1, "e-font", "contact-title", "big-title"], ["data-aos", "fade-up", "data-aos-duration", "1000"], [1, "mt-5"], ["href", "mailto:sivaraaj6997@gmail.com", "target", "_blank", "data-aos", "fade-up", "data-aos-duration", "1000", 1, "main-btn", 3, "click"]],
+      consts: [["id", "contact", 1, "section"], [1, "container", "contact"], [1, "section-box"], ["data-aos", "fade-up", "data-aos-duration", "1000", 1, "mb-4"], [1, "contact-pre-title", "big-subtitle"], [1, "e-font", "contact-title", "big-title"], ["data-aos", "fade-up", "data-aos-duration", "1000"], [1, "mt-5"], ["href", "mailto:prathap026prathap@gmail.com", "target", "_blank", "data-aos", "fade-up", "data-aos-duration", "1000", 1, "main-btn", 3, "click"]],
       template: function ContactComponent_Template(rf, ctx) {
         if (rf & 1) {
           _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "section", 0)(1, "div", 1)(2, "div", 2)(3, "div", 3)(4, "h3", 4);

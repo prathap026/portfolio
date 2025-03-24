@@ -9,18 +9,16 @@
           {{ "Contact.Title" | translate }}
         </h4>
       </div>
-      <h4><p data-aos="fade-up" data-aos-duration="1000">
-        {{ "Contact.Content" | translate }}
-      </p></h4>
+      <h4>
+        <p data-aos="fade-up" data-aos-duration="1000">
+          {{ "Contact.Content" | translate }}
+        </p>
+      </h4>
+
+      <!-- Email Contact Button
       <div class="mt-5">
         <a
-          (click)="
-            analyticsService.sendAnalyticEvent(
-              'click_send_mail',
-              'contact',
-              'email'
-            )
-          "
+          (click)="analyticsService.sendAnalyticEvent('click_send_mail', 'contact', 'email')"
           href="mailto:prathap026prathap@gmail.com"
           target="_blank"
           class="main-btn"
@@ -28,6 +26,20 @@
           data-aos-duration="1000"
         >
           {{ "Contact.Btn" | translate }}
+        </a>
+      </div> -->
+
+      <!-- WhatsApp Contact Button -->
+      <div class="mt-3">
+        <a
+          (click)="analyticsService.sendAnalyticEvent('click_whatsapp', 'contact', 'whatsapp')"
+          href="https://wa.me/919345749329"
+          target="_blank"
+          class="whatsapp-btn"
+          data-aos="fade-up"
+          data-aos-duration="1000"
+        >
+          <i class="fab fa-whatsapp"></i> Chat on WhatsApp
         </a>
       </div>
     </div>
